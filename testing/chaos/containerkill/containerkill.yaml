@@ -1,0 +1,44 @@
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: hippo-containerkill-chaos
+  namespace: pgo
+spec:
+  # It can be delete/retain
+  jobCleanUpPolicy: 'retain'  
+  # It can be active/stop
+  engineState: 'active'
+  appinfo:
+    appns: 'pgo'
+    applabel: 'name=hippo'
+    appkind: 'deployment'
+  chaosServiceAccount: container-kill-sa
+  experiments:
+    - name: container-kill
+      spec:
+        components:
+          env:
+            # provide the chaos interval
+            - name: CHAOS_INTERVAL
+              value: '10'
+
+            # provide the total chaos duration
+            - name: TOTAL_CHAOS_DURATION
+              value: '20'
+
+            # provide the container to kill
+            - name: TARGET_CONTAINER
+              value: 'database'
+
+
+
+            # provide the name of container runtime
+            # for litmus LIB, it supports docker, containerd, crio
+            # for pumba LIB, it supports docker only
+            - name: CONTAINER_RUNTIME
+              value: 'containerd'
+
+            # provide the socket file path
+            - name: SOCKET_PATH
+              value: '/var/run/containerd/containerd.sock'
+              
